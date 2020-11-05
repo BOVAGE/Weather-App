@@ -19,19 +19,27 @@ def getWeather(cityName: str) -> dict:
     #pprint.pprint(weatherDict)
     return weatherDict
 
-def displayWeather():
-    weatherData = getWeather(locationEntry.get())
-    name = weatherData["name"]
-    temp = weatherData["main"]["temp"]
-    country = weatherData["sys"]["country"]
-    description = weatherData["weather"][0]["description"].capitalize()
-    iconid = weatherData["weather"][0]["icon"]
-    iconUrl = f"http://openweathermap.org/img/wn/{iconid}@2x.png"
-    #get image for the icons
-    #icon = requests.get(iconUrl)
-    #icon = tk.PhotoImage(file = icon.content)
-    result.set(f"City: {name}\nCondition: {description}\nCountry: {country}\nTemperature(\N{DEGREE SIGN}C): {temp}")
-    resultText.config(bg = "red")
+def displayWeather(*events):
+    """ displays the result to label widgets """
+    try:
+        weatherData = getWeather(locationEntry.get())
+        #print(weatherData)
+    except requests.ConnectionError:
+        result.set("Check your internet connection")
+        
+    try:
+        name = weatherData["name"]
+        temp = weatherData["main"]["temp"]
+        country = weatherData["sys"]["country"]
+        description = weatherData["weather"][0]["description"].capitalize()
+        iconid = weatherData["weather"][0]["icon"]
+        iconUrl = f"http://openweathermap.org/img/wn/{iconid}@2x.png"
+        #get image for the icons
+        #icon = requests.get(iconUrl)
+        #icon = tk.PhotoImage(file = icon.content)
+        result.set(f"City: {name}\nCondition: {description}\nCountry: {country}\nTemperature(\N{DEGREE SIGN}C): {temp}")
+    except KeyError:
+        result.set(weatherData.get("message"))
     
 
 backgroundImage = tk.PhotoImage(file = "images/background.png")
@@ -53,6 +61,7 @@ getWeatherBtn = tk.Button(topFrame, text = "Get Weather", bg = "blue", bd = "4",
                           relief = "raised", font = ("Arial", 12),
                           command = displayWeather)
 getWeatherBtn.place(relx = 0.71, rely = 0.05, relwidth = 0.29, relheight = 0.9)
+root.bind("<Return>", displayWeather)
 
 result = tk.StringVar()
 resultText = tk.Label(bottomFrame, textvariable = result, font = ("Arial", 16))
