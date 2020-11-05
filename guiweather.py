@@ -6,6 +6,8 @@ import requests, json, pprint
 baseWidth = 435
 baseHeight = 400
 root = tk.Tk()
+root.title("Weather App")
+root.iconbitmap(r"images\logo.ico")
 root.geometry(f"{baseWidth}x{baseWidth}+0+0")
 
 def getWeather(cityName: str) -> dict:
@@ -25,21 +27,21 @@ def displayWeather(*events):
         weatherData = getWeather(locationEntry.get())
         #print(weatherData)
     except requests.ConnectionError:
-        result.set("Check your internet connection")
-        
-    try:
-        name = weatherData["name"]
-        temp = weatherData["main"]["temp"]
-        country = weatherData["sys"]["country"]
-        description = weatherData["weather"][0]["description"].capitalize()
-        iconid = weatherData["weather"][0]["icon"]
-        iconUrl = f"http://openweathermap.org/img/wn/{iconid}@2x.png"
-        #get image for the icons
-        #icon = requests.get(iconUrl)
-        #icon = tk.PhotoImage(file = icon.content)
-        result.set(f"City: {name}\nCondition: {description}\nCountry: {country}\nTemperature(\N{DEGREE SIGN}C): {temp}")
-    except KeyError:
-        result.set(weatherData.get("message"))
+        result.set("Check your internet connection")    
+    else:
+        try:
+            name = weatherData["name"]
+            temp = weatherData["main"]["temp"]
+            country = weatherData["sys"]["country"]
+            description = weatherData["weather"][0]["description"].capitalize()
+            iconid = weatherData["weather"][0]["icon"]
+            iconUrl = f"http://openweathermap.org/img/wn/{iconid}@2x.png"
+            #get image for the icons
+            #icon = requests.get(iconUrl)
+            #icon = tk.PhotoImage(file = icon.content)
+            result.set(f"City: {name}\nCondition: {description}\nCountry: {country}\nTemperature(\N{DEGREE SIGN}C): {temp}")
+        except KeyError:
+            result.set(weatherData.get("message"))
     
 
 backgroundImage = tk.PhotoImage(file = "images/background.png")
@@ -61,6 +63,7 @@ getWeatherBtn = tk.Button(topFrame, text = "Get Weather", bg = "blue", bd = "4",
                           relief = "raised", font = ("Arial", 12),
                           command = displayWeather)
 getWeatherBtn.place(relx = 0.71, rely = 0.05, relwidth = 0.29, relheight = 0.9)
+
 root.bind("<Return>", displayWeather)
 
 result = tk.StringVar()
